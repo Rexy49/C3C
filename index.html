@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>4D Box Chart Comparator</title>
 <style>
-  /* Basic Reset & Variables for theme */
   :root {
     --primary-color: #3498db;
     --secondary-color: #2980b9;
@@ -28,7 +27,7 @@
     line-height: 1.5;
   }
 
-  /* Container & Headings */
+  /* Container & Heading */
   .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -46,7 +45,7 @@
     color: #7f8c8d;
   }
 
-  /* Charts Layout */
+  /* Charts layout */
   .chart-container {
     display: flex;
     flex-wrap: wrap;
@@ -68,20 +67,20 @@
     color: var(--primary-color);
     font-size: 1.1rem;
   }
-  /* Input grid for charts (larger cells) */
+  /* Fixed size grid for input cells */
   #inputGrid1, #inputGrid2 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
+    gap: 8px;
   }
   #inputGrid1 input, #inputGrid2 input {
-    font-size: 24px;
-    padding: 8px;
-    aspect-ratio: 1 / 1;
+    width: 60px; /* Fixed size for consistency */
+    height: 60px;
+    font-size: 20px;
     text-align: center;
     border: 1px solid var(--primary-color);
-    border-radius: 6px;
-    background: var(--card-bg);
+    border-radius: 8px;
+    background: #fff;
     font-weight: bold;
     transition: all 0.2s;
   }
@@ -91,25 +90,24 @@
     box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
   }
 
-  /* Buttons */
+  /* Buttons styling */
   .buttons {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     margin: 15px 0;
   }
   button {
     font-size: clamp(14px, 4vw, 15px);
-    padding: 8px 12px;
+    padding: 8px 15px;
     background-color: var(--primary-color);
     color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-weight: 600;
-    flex: 1 1 auto;
-    min-width: 120px;
+    min-width: 140px;
     max-width: 180px;
     transition: background-color 0.2s;
   }
@@ -122,7 +120,7 @@
     opacity: 0.7;
   }
 
-  /* Results area */
+  /* Results Area */
   #output {
     margin-top: 20px;
   }
@@ -154,19 +152,19 @@
   .results {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 4px;
   }
   .number {
     background: #f0f0f0;
     border: 1px solid var(--border-color);
     border-radius: 3px;
-    padding: 5px 8px;
+    padding: 4px 8px;
     font-family: 'Courier New', monospace;
     font-weight: bold;
     font-size: 11px;
     text-align: center;
     flex: 1 0 calc(25% - 8px);
-    max-width: calc(25% - 5px);
+    max-width: calc(25% - 4px);
   }
   .number.match {
     background-color: var(--match-color);
@@ -180,7 +178,7 @@
     text-align: center;
     margin-bottom: 12px;
   }
-  /* Matches Section styling */
+  /* Matches section styling */
   .matches-section {
     width: 100%;
     max-width: 800px;
@@ -235,7 +233,7 @@
   .export-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 5px;
+    gap: 4px;
   }
   .export-cell {
     border: 1px solid #ddd;
@@ -271,13 +269,12 @@
     border-bottom: 1px solid #ccc;
     padding-bottom: 3px;
   }
-  /* Responsive adjustments for export view */
+  /* Responsive adjustments */
   @media(max-width: 768px) {
     .export-results {
       flex-direction: column;
     }
   }
-
   /* Print styles for clean output */
   @media print {
     body {
@@ -309,14 +306,12 @@
   <h1>4D Box Chart Comparator</h1>
   <p class="description">Enter numbers in both 4x4 charts to generate and compare 4D combinations</p>
   
-  <!-- Charts Input -->
+  <!-- Input Charts -->
   <div class="chart-container">
-    <!-- Chart 1 -->
     <div class="chart-box">
       <h3 class="chart-title">Chart 1</h3>
       <div id="inputGrid1"></div>
     </div>
-    <!-- Chart 2 -->
     <div class="chart-box">
       <h3 class="chart-title">Chart 2</h3>
       <div id="inputGrid2"></div>
@@ -329,10 +324,10 @@
     <button onclick="resetGrids()">Reset All</button>
   </div>
   
-  <!-- Results -->
+  <!-- Results display -->
   <div id="output"></div>
   
-  <!-- Export Buttons -->
+  <!-- Export Button Group -->
   <div class="export-buttons" id="exportButtons" style="display:none;">
     <button onclick="exportToText()">Export as Text</button>
     <button onclick="exportToImage()">Export as Image</button>
@@ -340,7 +335,7 @@
   </div>
 </div>
 
-<!-- Hidden Template for Export -->
+<!-- Hidden template for export -->
 <div id="exportTemplate" style="display: none;">
   <div class="export-container">
     <div class="export-header">
@@ -358,7 +353,7 @@
         <div class="export-grid" id="exportGrid2"></div>
       </div>
     </div>
-    <!-- Results -->
+    <!-- Results summaries -->
     <div class="export-results">
       <div class="export-result-box">
         <div class="export-chart-title">Chart 1 Results</div>
@@ -369,7 +364,7 @@
         <div id="exportResults2"></div>
       </div>
     </div>
-    <!-- Matching Combinations -->
+    <!-- Matching combinations -->
     <div class="export-result-box" style="width: 100%;">
       <div class="export-chart-title">Matching Combinations</div>
       <div id="exportMatches"></div>
@@ -380,14 +375,14 @@
 <!-- External library for capturing images -->
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
-  // Data storage for categories
+  // Data storage
   let currentCategories = {
     chart1: { '24-way': [], '12-way': [], '6-way': [], '4-way': [], '1-way': [] },
     chart2: { '24-way': [], '12-way': [], '6-way': [], '4-way': [], '1-way': [] },
     matches: { '24-way': [], '12-way': [], '6-way': [], '4-way': [], '1-way': [] }
   };
 
-  // Initialize grids with default values
+  // Initialize grids on load
   window.onload = () => {
     initGrids();
     validateInputs();
@@ -413,23 +408,23 @@
 
   function createGrid(gridId, defaultValues) {
     const grid = document.getElementById(gridId);
-    grid.innerHTML = '';
+    grid.innerHTML='';
     for (let i=0; i<16; i++) {
-      const input = document.createElement('input');
-      input.type='number';
-      input.min='0'; input.max='9';
-      input.value=defaultValues[i];
-      input.dataset.row=Math.floor(i/4);
-      input.dataset.col=i%4;
-      input.oninput=validateInputs;
-      input.onblur=()=> {
-        let val = parseInt(input.value);
-        if (isNaN(val) || val<0) val=0;
-        if (val>9) val=9;
-        input.value=val;
+      const inp=document.createElement('input');
+      inp.type='number';
+      inp.min='0'; inp.max='9';
+      inp.value=defaultValues[i];
+      inp.dataset.row=Math.floor(i/4);
+      inp.dataset.col=i%4;
+      inp.oninput=validateInputs;
+      inp.onblur=() => {
+        let v=parseInt(inp.value);
+        if (isNaN(v) || v<0) v=0;
+        if (v>9) v=9;
+        inp.value=v;
         validateInputs();
       };
-      grid.appendChild(input);
+      grid.appendChild(inp);
     }
   }
 
@@ -437,10 +432,9 @@
     const inputs1=document.querySelectorAll('#inputGrid1 input');
     const inputs2=document.querySelectorAll('#inputGrid2 input');
     const generateBtn=document.getElementById('generateBtn');
-
     let allFilled=true;
-    for (const input of [...inputs1, ...inputs2]) {
-      if (input.value.trim()==='' || isNaN(parseInt(input.value))) {
+    for (const inp of [...inputs1, ...inputs2]) {
+      if (inp.value.trim()==='' || isNaN(parseInt(inp.value))) {
         allFilled=false;
         break;
       }
@@ -451,9 +445,8 @@
   function getColumnValues(gridId) {
     const inputs=document.querySelectorAll(`#${gridId} input`);
     const columns=[[],[],[],[]];
-    inputs.forEach((inp,i)=>{
-      const col=i%4;
-      columns[col].push(inp.value);
+    inputs.forEach((inp,i) => {
+      columns[i%4].push(inp.value);
     });
     return columns;
   }
@@ -482,7 +475,6 @@
       if (countUnique===4) categories['24-way'].push(c);
       else if (countUnique===3) categories['12-way'].push(c);
       else if (countUnique===2) {
-        // check for 3 identical digits -> 4-way
         const counts={};
         digits.forEach(d=>counts[d]=(counts[d]||0)+1);
         if (Object.values(counts).includes(3)) categories['4-way'].push(c);
@@ -499,7 +491,6 @@
       alert('Fill all boxes with numbers between 0-9 in both charts.');
       return;
     }
-    // Generate for Chart 1 & 2
     currentCategories.chart1 = categorize(generateGridCombinations('inputGrid1'));
     currentCategories.chart2 = categorize(generateGridCombinations('inputGrid2'));
     findMatches();
@@ -510,14 +501,12 @@
   function validateAllInputs() {
     const allInputs=document.querySelectorAll('#inputGrid1 input, #inputGrid2 input');
     for (const inp of allInputs) {
-      const val=inp.value.trim();
-      if (val==='' || isNaN(parseInt(val))) return false;
+      if (inp.value.trim()==='' || isNaN(parseInt(inp.value))) return false;
     }
     return true;
   }
 
   function findMatches() {
-    // Find intersection for each category
     for (const category of Object.keys(currentCategories.chart1)) {
       const set1=new Set(currentCategories.chart1[category]);
       const set2=new Set(currentCategories.chart2[category]);
@@ -529,14 +518,14 @@
     const container=document.getElementById('output');
     container.innerHTML='';
 
-    // Chart 1 & 2 Results
+    // Create Chart Results
     const resultsDiv=document.createElement('div');
     resultsDiv.className='results-container';
     resultsDiv.appendChild(createResultsBox('Chart 1 Results', currentCategories.chart1));
     resultsDiv.appendChild(createResultsBox('Chart 2 Results', currentCategories.chart2));
     container.appendChild(resultsDiv);
 
-    // Matching Combinations
+    // Show matching results
     displayMatches();
   }
 
@@ -549,13 +538,11 @@
     h3.textContent=title;
     box.appendChild(h3);
 
-    // Total count
-    const totalCount=document.createElement('div');
-    totalCount.className='total-count';
-    totalCount.textContent=`Total: ${Object.values(categories).flat().length}`;
-    box.appendChild(totalCount);
+    const totalDiv=document.createElement('div');
+    totalDiv.className='total-count';
+    totalDiv.textContent=`Total: ${Object.values(categories).flat().length}`;
+    box.appendChild(totalDiv);
 
-    // Category sections
     for (const [category, combos] of Object.entries(categories)) {
       if (combos.length===0) continue;
       const catDiv=document.createElement('div');
@@ -633,10 +620,11 @@
     validateInputs();
   }
 
-  // ===================== Export Functions =====================
+  // ================== Export as Text ===================
   function exportToText() {
     let text='===== 4D Box Chart Comparison Results =====\n';
     text+='Generated on '+new Date().toLocaleString()+'\n\n';
+
     // Charts
     text+='=== Charts ===\n';
     text+='Chart 1:\n'+getChartText('inputGrid1')+'\n';
@@ -670,7 +658,6 @@
     for (const [category, combos] of Object.entries(categories)) {
       if (combos.length===0) continue;
       txt+=`${category} (${combos.length}):\n`;
-      // Print in blocks of 8 per line
       for (let i=0; i<combos.length; i+=8) {
         const line=combos.slice(i,i+8).join(' ');
         txt+=line+'\n';
@@ -692,9 +679,9 @@
     URL.revokeObjectURL(url);
   }
 
-  // =================== Export as Image ===================
+  // ================== Export as Image ===================
   function exportToImage() {
-    // Prepare a clone of the export template
+    // Clone the template
     const clone=document.getElementById('exportTemplate').cloneNode(true);
     Object.assign(clone.style,{
       display:'block',
@@ -708,18 +695,16 @@
     // Set date
     clone.querySelector('#exportDate').textContent=new Date().toLocaleString();
 
-    // Populate grids with current input data
+    // Populate grids with latest input data
     populateExportGrid('inputGrid1','exportGrid1',clone);
     populateExportGrid('inputGrid2','exportGrid2',clone);
-
-    // Populate results summaries
+    // Populate summaries
     populateExportResultsText('exportResults1', currentCategories.chart1, clone);
     populateExportResultsText('exportResults2', currentCategories.chart2, clone);
     populateExportResultsText('exportMatches', currentCategories.matches, clone, true);
 
     document.body.appendChild(clone);
 
-    // Capture the image
     html2canvas(clone, { scale:2, backgroundColor:'#ffffff' }).then(canvas => {
       document.body.removeChild(clone);
       const a=document.createElement('a');
@@ -732,9 +717,9 @@
   function populateExportGrid(originalGridId, exportGridId, cloneContainer) {
     const originalInputs=document.querySelectorAll(`#${originalGridId} input`);
     const exportGrid=cloneContainer.querySelector(`#${exportGridId}`);
-    // Clear previous cells
+    // Clear previous
     exportGrid.innerHTML='';
-    // Fill with current input values
+    // Fill with current data
     originalInputs.forEach(input => {
       const cell=document.createElement('div');
       cell.className='export-cell';
@@ -747,7 +732,7 @@
     const target=cloneContainer.querySelector(`#${targetId}`);
     target.innerHTML='';
 
-    // Header style
+    // Header
     const headerDiv=document.createElement('div');
     headerDiv.style='font-family:Arial,sans-serif; font-size:12px; font-weight:bold; color:#0066cc; margin-top:8px; margin-bottom:4px; border-bottom:1px solid #ccc; padding-bottom:2px;';
     headerDiv.textContent=isMatch?'Matching Combinations':'Categories';
@@ -763,7 +748,6 @@
       catHead.textContent=`${category} (${combos.length})`;
       catDiv.appendChild(catHead);
 
-      // Show combos in blocks
       const blockDiv=document.createElement('div');
       blockDiv.style='display:flex; flex-wrap:wrap; gap:4px; margin-top:2px;';
       combos.forEach(c => {
@@ -777,7 +761,6 @@
       target.appendChild(catDiv);
     }
   }
-
 </script>
 </body>
 </html>
