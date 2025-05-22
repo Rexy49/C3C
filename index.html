@@ -74,10 +74,17 @@
       gap: 6px;
       margin-bottom: 12px;
     }
+    /* Increase size for chart input boxes */
+    #inputGrid1 input,
+    #inputGrid2 input {
+      font-size: 24px; /* Larger font size for numbers */
+      padding: 8px;    /* Larger padding for bigger cells */
+      aspect-ratio: 1 / 1; /* Keep cells square */
+    }
     input[type="number"] {
       width: 100%;
-      aspect-ratio: 1;
-      font-size: clamp(16px, 5vw, 20px);
+      aspect-ratio: 1 / 1;
+      font-size: 24px; /* Make numbers bigger */
       text-align: center;
       border: 1px solid var(--primary-color);
       border-radius: 6px;
@@ -86,7 +93,7 @@
       transition: all 0.2s;
       -webkit-appearance: none;
       margin: 0;
-      padding: 0;
+      padding: 8px;
     }
     input[type="number"]:focus {
       outline: none;
