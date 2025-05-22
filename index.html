@@ -67,14 +67,15 @@
     color: var(--primary-color);
     font-size: 1.1rem;
   }
-  /* Fixed size grid for input cells */
+
+  /* Input grid cells */
   #inputGrid1, #inputGrid2 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 8px;
   }
   #inputGrid1 input, #inputGrid2 input {
-    width: 60px; /* Fixed size for consistency */
+    width: 60px;
     height: 60px;
     font-size: 20px;
     text-align: center;
@@ -164,7 +165,7 @@
     font-size: 11px;
     text-align: center;
     flex: 1 0 calc(25% - 8px);
-    max-width: calc(25% - 4px);
+    max-width: calc(25% - 8px);
   }
   .number.match {
     background-color: var(--match-color);
@@ -205,8 +206,6 @@
   .export-header {
     text-align: center;
     margin-bottom: 15px;
-    border-bottom: 2px solid var(--primary-color);
-    padding-bottom: 10px;
   }
   .export-header h1 {
     margin: 0;
@@ -236,16 +235,15 @@
     gap: 4px;
   }
   .export-cell {
-    border: 1px solid #ddd;
-    text-align: center;
+    border: 1px solid #ccc;
     padding: 8px 0;
-    font-weight: bold;
-    aspect-ratio: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    text-align: center;
+    aspect-ratio: 1/1;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Courier New', monospace;
-    font-size: 11px;
   }
   .export-results {
     display: flex;
@@ -256,18 +254,9 @@
   .export-result-box {
     flex: 1;
     min-width: 300px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     padding: 10px;
-  }
-  .export-category {
-    margin-bottom: 10px;
-  }
-  .export-category h3 {
-    margin: 0 0 5px 0;
-    font-size: 1rem;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 3px;
   }
   /* Responsive adjustments */
   @media(max-width: 768px) {
@@ -335,39 +324,39 @@
   </div>
 </div>
 
-<!-- Hidden template for export -->
-<div id="exportTemplate" style="display: none;">
-  <div class="export-container">
-    <div class="export-header">
-      <h1>4D Box Chart Comparison Results</h1>
-      <p>Generated on <span id="exportDate"></span></p>
+<!-- Hidden export template -->
+<div id="exportTemplate" style="display:none;">
+  <div class="export-container" style="width:100%; max-width:1000px; font-family:Arial,sans-serif;">
+    <div class="export-header" style="text-align:center; margin-bottom:15px;">
+      <h1 style="margin:0; font-size:24px;">4D Box Chart Comparison Results</h1>
+      <p style="margin:4px 0 0;">Generated on <span id="exportDate"></span></p>
     </div>
     <!-- Charts for export -->
-    <div class="export-charts">
-      <div class="export-chart">
-        <div class="export-chart-title">Chart 1</div>
-        <div class="export-grid" id="exportGrid1"></div>
+    <div class="export-charts" style="display:flex; flex-wrap:wrap; justify-content:space-around; gap:15px; margin-bottom:15px;">
+      <div class="export-chart" style="flex:1; min-width:250px;">
+        <div class="export-chart-title" style="text-align:center; font-weight:bold; margin-bottom:10px;">Chart 1</div>
+        <div class="export-grid" id="exportGrid1" style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px; border:1px solid #ccc; padding:4px;"></div>
       </div>
-      <div class="export-chart">
-        <div class="export-chart-title">Chart 2</div>
-        <div class="export-grid" id="exportGrid2"></div>
+      <div class="export-chart" style="flex:1; min-width:250px;">
+        <div class="export-chart-title" style="text-align:center; font-weight:bold; margin-bottom:10px;">Chart 2</div>
+        <div class="export-grid" id="exportGrid2" style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px; border:1px solid #ccc; padding:4px;"></div>
       </div>
     </div>
     <!-- Results summaries -->
-    <div class="export-results">
-      <div class="export-result-box">
-        <div class="export-chart-title">Chart 1 Results</div>
-        <div id="exportResults1"></div>
+    <div class="export-results" style="display:flex; flex-wrap:wrap; gap:15px;">
+      <div class="export-result-box" style="flex:1; min-width:300px; border:1px solid #ccc; border-radius:4px; padding:10px;">
+        <div class="export-chart-title" style="font-weight:bold; margin-bottom:8px;">Chart 1 Results</div>
+        <div id="exportResults1" style="white-space: pre-wrap; font-family:Arial, sans-serif; font-size:12px;"></div>
       </div>
-      <div class="export-result-box">
-        <div class="export-chart-title">Chart 2 Results</div>
-        <div id="exportResults2"></div>
+      <div class="export-result-box" style="flex:1; min-width:300px; border:1px solid #ccc; border-radius:4px; padding:10px;">
+        <div class="export-chart-title" style="font-weight:bold; margin-bottom:8px;">Chart 2 Results</div>
+        <div id="exportResults2" style="white-space: pre-wrap; font-family:Arial, sans-serif; font-size:12px;"></div>
       </div>
     </div>
     <!-- Matching combinations -->
-    <div class="export-result-box" style="width: 100%;">
-      <div class="export-chart-title">Matching Combinations</div>
-      <div id="exportMatches"></div>
+    <div class="export-result-box" style="width:100%; border:1px solid #ccc; border-radius:4px; padding:10px; margin-top:15px;">
+      <div class="export-chart-title" style="font-weight:bold; margin-bottom:8px;">Matching Combinations</div>
+      <div id="exportMatches" style="white-space: pre-wrap; font-family:Arial, sans-serif; font-size:12px;"></div>
     </div>
   </div>
 </div>
@@ -681,23 +670,23 @@
 
   // ================== Export as Image ===================
   function exportToImage() {
-    // Clone the template
-    const clone=document.getElementById('exportTemplate').cloneNode(true);
-    Object.assign(clone.style,{
-      display:'block',
-      position:'absolute',
-      top:'-9999px',
-      left:'-9999px',
-      width:'auto',
-      height:'auto',
-      zIndex:'9999'
+    // Clone the export template
+    const clone = document.getElementById('exportTemplate').cloneNode(true);
+    Object.assign(clone.style, {
+      display: 'block',
+      position: 'absolute',
+      top: '-9999px',
+      left: '-9999px',
+      width: 'auto',
+      height: 'auto',
+      zIndex: '9999'
     });
     // Set date
-    clone.querySelector('#exportDate').textContent=new Date().toLocaleString();
+    clone.querySelector('#exportDate').textContent = new Date().toLocaleString();
 
     // Populate grids with latest input data
-    populateExportGrid('inputGrid1','exportGrid1',clone);
-    populateExportGrid('inputGrid2','exportGrid2',clone);
+    populateExportGrid('inputGrid1', 'exportGrid1', clone);
+    populateExportGrid('inputGrid2', 'exportGrid2', clone);
     // Populate summaries
     populateExportResultsText('exportResults1', currentCategories.chart1, clone);
     populateExportResultsText('exportResults2', currentCategories.chart2, clone);
@@ -705,60 +694,58 @@
 
     document.body.appendChild(clone);
 
-    html2canvas(clone, { scale:2, backgroundColor:'#ffffff' }).then(canvas => {
+    html2canvas(clone, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
       document.body.removeChild(clone);
-      const a=document.createElement('a');
-      a.href=canvas.toDataURL('image/png');
-      a.download='4d_comparison_results.png';
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = '4d_comparison_results.png';
       a.click();
     });
   }
 
   function populateExportGrid(originalGridId, exportGridId, cloneContainer) {
-    const originalInputs=document.querySelectorAll(`#${originalGridId} input`);
-    const exportGrid=cloneContainer.querySelector(`#${exportGridId}`);
-    // Clear previous
-    exportGrid.innerHTML='';
-    // Fill with current data
-    originalInputs.forEach(input => {
-      const cell=document.createElement('div');
+    const originalInputs = document.querySelectorAll(`#${originalGridId} input`);
+    const exportGrid = cloneContainer.querySelector(`#${exportGridId}`);
+    exportGrid.innerHTML = '';
+    originalInputs.forEach(inp => {
+      const cell = document.createElement('div');
       cell.className='export-cell';
-      cell.textContent=input.value;
+      cell.style='border:1px solid #ccc; padding:4px; font-family:Courier New, monospace; font-size:11px;';
+      cell.textContent = inp.value;
       exportGrid.appendChild(cell);
     });
   }
 
   function populateExportResultsText(targetId, categories, cloneContainer, isMatch=false) {
-    const target=cloneContainer.querySelector(`#${targetId}`);
+    const target = cloneContainer.querySelector(`#${targetId}`);
     target.innerHTML='';
 
     // Header
-    const headerDiv=document.createElement('div');
-    headerDiv.style='font-family:Arial,sans-serif; font-size:12px; font-weight:bold; color:#0066cc; margin-top:8px; margin-bottom:4px; border-bottom:1px solid #ccc; padding-bottom:2px;';
-    headerDiv.textContent=isMatch?'Matching Combinations':'Categories';
+    const headerDiv = document.createElement('div');
+    headerDiv.style='font-family:Arial,sans-serif; font-size:12px; font-weight:bold; color:#0066cc; margin-top:8px; margin-bottom:4px;';
+    headerDiv.textContent= isMatch ? 'Matching Combinations' : 'Categories';
     target.appendChild(headerDiv);
 
-    // Loop categories
     for (const [category, combos] of Object.entries(categories)) {
       if (combos.length===0) continue;
-      const catDiv=document.createElement('div');
-      catDiv.style='margin-top:4px;';
-      const catHead=document.createElement('div');
-      catHead.style='font-family:Arial,sans-serif; font-size:11px; font-weight:bold; color:#333;';
-      catHead.textContent=`${category} (${combos.length})`;
-      catDiv.appendChild(catHead);
+      const categoryDiv = document.createElement('div');
+      categoryDiv.style='margin-top:4px;';
+      const categoryHeader = document.createElement('div');
+      categoryHeader.style='font-family:Arial,sans-serif; font-size:11px; font-weight:bold; color:#333;';
+      categoryHeader.textContent=`${category} (${combos.length})`;
+      categoryDiv.appendChild(categoryHeader);
 
-      const blockDiv=document.createElement('div');
-      blockDiv.style='display:flex; flex-wrap:wrap; gap:4px; margin-top:2px;';
+      const combosDiv = document.createElement('div');
+      combosDiv.style='display:flex; flex-wrap:wrap; gap:4px; margin-top:2px;';
       combos.forEach(c => {
-        const span=document.createElement('div');
+        const span = document.createElement('div');
         span.className='number' + (isMatch ? ' match' : '');
+        span.style='border:1px solid #ccc; padding:2px 4px; border-radius:3px; background-color:'+(isMatch?'#27ae60':'#f0f0f0')+'; color:'+(isMatch?'white':'black')+'; font-family:Courier New, monospace; font-size:11px; font-weight:bold;';
         span.textContent=c;
-        span.style='font-family:Courier New, monospace; font-size:11px; font-weight:bold; padding:2px 4px; border:1px solid #ccc; border-radius:3px; background-color:'+(isMatch?'#27ae60':'#f0f0f0')+'; color:'+(isMatch?'white':'black')+';';
-        blockDiv.appendChild(span);
+        combosDiv.appendChild(span);
       });
-      catDiv.appendChild(blockDiv);
-      target.appendChild(catDiv);
+      categoryDiv.appendChild(combosDiv);
+      target.appendChild(categoryDiv);
     }
   }
 </script>
