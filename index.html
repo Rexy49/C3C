@@ -749,8 +749,8 @@
     }
 
     function exportToImage() {
-      const template = document.getElementById('exportTemplate');
-      const clone = template.cloneNode(true);
+      // First, refresh export grids with current input values
+      const clone = document.getElementById('exportTemplate').cloneNode(true);
       Object.assign(clone.style, {
         display: 'block',
         position: 'absolute',
@@ -763,7 +763,7 @@
       // Set date
       clone.querySelector('#exportDate').textContent = new Date().toLocaleString();
 
-      // Populate grids
+      // Populate grids with current input values
       populateExportGrid('inputGrid1', 'exportGrid1', clone);
       populateExportGrid('inputGrid2', 'exportGrid2', clone);
       
@@ -786,10 +786,10 @@
     }
 
     function populateExportGrid(originalGridId, exportGridId, cloneContainer) {
-      const originalGrid = document.getElementById(originalGridId);
+      const originalInputs = document.querySelectorAll(`#${originalGridId} input`);
       const exportGrid = cloneContainer.querySelector(`#${exportGridId}`);
-      exportGrid.innerHTML = '';
-      originalGrid.querySelectorAll('input').forEach(input => {
+      exportGrid.innerHTML=''; // Clear previous cells
+      originalInputs.forEach(input => {
         const cell = document.createElement('div');
         cell.className='export-cell';
         cell.textContent = input.value;
