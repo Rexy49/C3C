@@ -150,11 +150,12 @@
     border-bottom: 1px solid var(--primary-color);
     padding-bottom: 4px;
   }
-  .results {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
+.results {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr); /* 8 columns per row */
+  grid-template-rows: repeat(8, auto); /* 8 rows */
+  gap: 4px;
+}
   .number {
     background: #f0f0f0;
     border: 1px solid var(--border-color);
