@@ -152,9 +152,14 @@
   }
 .results {
   display: grid;
-  grid-template-columns: repeat(8, 1fr); /* 8 columns per row */
-  grid-template-rows: repeat(8, auto); /* 8 rows */
+  /* Make 8 columns and 8 rows for 8x8 appearance */
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, auto);
   gap: 4px;
+  /* Larger background for better visibility */
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 8px;
 }
   .number {
     background: #f0f0f0;
@@ -407,7 +412,7 @@
 <!-- External library for capturing images -->
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
-  // Data storage
+  // Your JavaScript code here
   let currentCategories = {
     chart1: { '24-way': [], '12-way': [], '6-way': [], '4-way': [], '1-way': [] },
     chart2: { '24-way': [], '12-way': [], '6-way': [], '4-way': [], '1-way': [] },
@@ -472,7 +477,6 @@
     generateBtn.disabled=!allFilled;
   }
 
-  // Get column values
   function getColumnValues(gridId) {
     const inputs=document.querySelectorAll(`#${gridId} input`);
     const columns=[[],[],[],[]];
@@ -482,7 +486,6 @@
     return columns;
   }
 
-  // Generate all combinations from grid
   function generateGridCombinations(gridId) {
     const cols=getColumnValues(gridId);
     const combos=new Set();
@@ -498,7 +501,6 @@
     return Array.from(combos).sort();
   }
 
-  // Categorize combos into groups based on unique digits count
   function categorize(combos) {
     const categories={ '24-way': [], '12-way': [], '6-way': [], '4-way': [], '1-way': [] };
     combos.forEach(c => {
@@ -529,7 +531,7 @@
     findMatches();
     displayResults();
     document.getElementById('exportButtons').style.display='flex';
-    document.getElementById('permMatchesSection').style.display='none'; // hide permutation matches initially
+    document.getElementById('permMatchesSection').style.display='none';
   }
 
   function validateAllInputs() {
@@ -552,20 +554,18 @@
     const container=document.getElementById('output');
     container.innerHTML='';
 
-    // Create Chart Results
     const resultsDiv=document.createElement('div');
     resultsDiv.className='results-container';
     resultsDiv.appendChild(createResultsBox('Chart 1 Results', currentCategories.chart1));
     resultsDiv.appendChild(createResultsBox('Chart 2 Results', currentCategories.chart2));
     container.appendChild(resultsDiv);
 
-    // Show matching results
     displayMatches();
   }
 
   function createResultsBox(title, categories) {
     const box=document.createElement('div');
-     box.className='results-box';
+    box.className='results-box';
 
     const h3=document.createElement('h3');
     h3.className='chart-title';
@@ -716,7 +716,6 @@
 
   // Export as Image
   function exportToImage() {
-    // Use html2canvas to capture the entire page or specific layout
     html2canvas(document.body, {scale:2, backgroundColor:'#fff'}).then(canvas => {
       const a=document.createElement('a');
       a.href=canvas.toDataURL('image/png');
@@ -724,7 +723,6 @@
       a.click();
     });
   }
-
 </script>
 </body>
 </html>
