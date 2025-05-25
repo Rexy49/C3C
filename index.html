@@ -152,11 +152,10 @@
   }
 .results {
   display: grid;
-  /* Make 8 columns and 8 rows for 8x8 appearance */
+  /* 8 columns, 8 rows for 8x8 grid */
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, auto);
   gap: 4px;
-  /* Larger background for better visibility */
   background-color: #fff;
   padding: 10px;
   border-radius: 8px;
@@ -165,10 +164,10 @@
     background: #f0f0f0;
     border: 1px solid var(--border-color);
     border-radius: 3px;
-    padding: 4px 8px;
+    padding: 2px 4px; /* smaller padding for fit */
     font-family: 'Courier New', monospace;
     font-weight: bold;
-    font-size: 11px;
+    font-size: 10px; /* smaller font size for better fit */
     text-align: center;
   }
   .number.match {
@@ -404,15 +403,10 @@
   </div>
 </div>
 
-<!-- Hidden export template for image export (simplified for this context) -->
-<div id="exportTemplate" style="display:none;">
-  <!-- You can add a similar layout as needed for exporting images -->
-</div>
-
 <!-- External library for capturing images -->
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
-  // Your JavaScript code here
+  // Data storage
   let currentCategories = {
     chart1: { '24-way': [], '12-way': [], '6-way': [], '4-way': [], '1-way': [] },
     chart2: { '24-way': [], '12-way': [], '6-way': [], '4-way': [], '1-way': [] },
@@ -723,6 +717,94 @@
       a.click();
     });
   }
+
+  // --- New functions for permutation matching ---
+
+  // Check if two strings are permutations
+  function isPermutation(str1, str2) {
+    if (str1.length !== str2.length) return false;
+    const arr1 = str1.split('').sort();
+    const arr2 = str2.split('').sort();
+    return arr1.join('') === arr2.join('');
+  }
+
+  // Main function to find permutation matches
+  function comparePermutationMatches() {
+    // Gather all combos from both charts
+    const combos1 = [
+      ...currentCategories.chart1['24-way'],
+      ...currentCategories.chart1['12-way'],
+      ...currentCategories.chart1['6-way'],
+      ...currentCategories.chart1['4-way'],
+      ...currentCategories.chart1['1-way']
+    ];
+
+    const combos2 = [
+      ...currentCategories.chart2['24-way'],
+      ...currentCategories.chart2['12-way'],
+      ...currentCategories.chart2['6-way'],
+      ...currentCategories.chart2['4-way'],
+      ...currentCategories.chart2['1-way']
+    ];
+
+    const matches = [];
+
+    // Compare each in combos1 with each in combos2
+    for (let c1 of combos1) {
+      for (let c2 of combos2) {
+        if (isPermutation(c1, c2)) {
+          matches.push({ c1, c2 });
+        }
+      }
+    }
+
+    // Show results
+    displayPermutationMatches(matches);
+  }
+
+  // Show permutation matches in the dedicated section
+  function displayPermutationMatches(matches) {
+    const section = document.getElementById('permMatchesSection');
+    section.style.display = 'block';
+
+    const container = document.getElementById('permMatches');
+    container.innerHTML='';
+
+    if (matches.length === 0) {
+      container.innerHTML='No permutation matches found.';
+      return;
+    }
+
+    // Show each pair
+    matches.forEach(({c1, c2}) => {
+      const div = document.createElement('div');
+      div.className='perm-pair';
+
+      const label1 = document.createElement('div');
+      label1.className='perm-label';
+      label1.textContent='Chart 1:';
+
+      const val1 = document.createElement('div');
+      val1.className='perm-value';
+      val1.textContent=c1;
+
+      const label2 = document.createElement('div');
+      label2.className='perm-label';
+      label2.textContent='Chart 2:';
+
+      const val2 = document.createElement('div');
+      val2.className='perm-value';
+      val2.textContent=c2;
+
+      div.appendChild(label1);
+      div.appendChild(val1);
+      div.appendChild(label2);
+      div.appendChild(val2);
+
+      container.appendChild(div);
+    });
+  }
+
 </script>
 </body>
 </html>
