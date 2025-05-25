@@ -381,10 +381,16 @@
   
   <!-- Action Buttons -->
   <div class="buttons">
-    <button id="generateBtn" onclick="generateCombinations()">Generate & Compare</button>
+    <button id="generateBtn" onclick="generateCombinations()" disabled>Generate & Compare</button>
     <button onclick="resetGrids()">Reset All</button>
     <button onclick="comparePermutationMatches()">Find Permutation Matches</button>
+    <button onclick="clearPermutationMatches()">Clear Matches</button>
+    <button onclick="saveState()">Save State</button>
+    <button onclick="loadState()">Load State</button>
   </div>
+
+  <!-- Processing overlay -->
+  <div id="processingOverlay">Processing...</div>
   
   <!-- Results display -->
   <div id="output"></div>
@@ -398,6 +404,7 @@
   <!-- Export Buttons -->
   <div class="export-buttons" id="exportButtons" style="display:none;">
     <button onclick="exportToText()">Export as Text</button>
+    <button onclick="exportToCSV()">Export as CSV</button>
     <button onclick="exportToImage()">Export as Image</button>
     <button onclick="window.print()">Print Results</button>
   </div>
@@ -413,11 +420,19 @@
     matches: { '24-way': [], '12-way': [], '6-way': [], '4-way': [], '1-way': [] }
   };
 
+  // Initialize on load
   window.onload=()=>{
     initGrids();
     validateInputs();
+    addInputValidationListeners();
+    setupShortcuts();
   };
 
+  function showProcessing(show) {
+    document.getElementById('processingOverlay').style.display=show?'flex':'none';
+  }
+
+  // Create grid inputs with defaults
   function initGrids() {
     const defaultValues1=[
       '7','4','9','5',
@@ -457,18 +472,33 @@
     }
   }
 
+  function addInputValidationListeners() {
+    document.querySelectorAll('#inputGrid1 input, #inputGrid2 input').forEach(inp => {
+      inp.addEventListener('input', ()=> {
+        validateInputs();
+        updateGenerateButtonState();
+      });
+    });
+  }
+
   function validateInputs() {
-    const inputs1=document.querySelectorAll('#inputGrid1 input');
-    const inputs2=document.querySelectorAll('#inputGrid2 input');
-    const generateBtn=document.getElementById('generateBtn');
+    const inputs=document.querySelectorAll('#inputGrid1 input, #inputGrid2 input');
     let allFilled=true;
-    for(const inp of [...inputs1,...inputs2]){
-      if(inp.value.trim()===''||isNaN(parseInt(inp.value))){
+    for(const inp of inputs){
+      const val=parseInt(inp.value);
+      if(isNaN(val) || val<0 || val>9){
+        inp.style.borderColor='red';
         allFilled=false;
-        break;
+      } else {
+        inp.style.borderColor='green';
       }
     }
-    generateBtn.disabled=!allFilled;
+    return allFilled;
+  }
+
+  function updateGenerateButtonState() {
+    const btn=document.getElementById('generateBtn');
+    btn.disabled=!validateInputs();
   }
 
   function getColumnValues(gridId) {
@@ -515,17 +545,20 @@
     return categories;
   }
 
-  function generateCombinations() {
+  async function generateCombinations() {
     if (!validateAllInputs()) {
-      alert('Fill all boxes with numbers between 0-9 in both charts.');
+      showToast('Please fill all boxes with numbers between 0-9.');
       return;
     }
+    showProcessing(true);
+    // Generate and categorize for chart1 and chart2
     currentCategories.chart1 = categorize(generateGridCombinations('inputGrid1'));
     currentCategories.chart2 = categorize(generateGridCombinations('inputGrid2'));
     findMatches();
     displayResults();
     document.getElementById('exportButtons').style.display='flex';
     document.getElementById('permMatchesSection').style.display='none';
+    showProcessing(false);
   }
 
   function validateAllInputs() {
@@ -553,8 +586,6 @@
     resultsDiv.appendChild(createResultsBox('Chart 1 Results', currentCategories.chart1));
     resultsDiv.appendChild(createResultsBox('Chart 2 Results', currentCategories.chart2));
     container.appendChild(resultsDiv);
-
-    displayMatches();
   }
 
   function createResultsBox(title, categories) {
@@ -595,182 +626,9 @@
     return box;
   }
 
-  function displayMatches() {
-    const container=document.getElementById('output');
-    const section=document.createElement('div');
-    section.className='matches-section';
-
-    const title=document.createElement('h2');
-    title.textContent='Matching Combinations';
-    section.appendChild(title);
-
-    const totalMatches=Object.values(currentCategories.matches).reduce((a,b)=>a+b.length,0);
-    const totalDiv=document.createElement('div');
-    totalDiv.className='total-count';
-    totalDiv.textContent=`Total Matches: ${totalMatches}`;
-    section.appendChild(totalDiv);
-
-    if (totalMatches===0) {
-      const msg=document.createElement('p');
-      msg.style='text-align:center; font-style:italic;';
-      msg.textContent='No matching combinations found.';
-      section.appendChild(msg);
-    } else {
-      for (const [category, combos] of Object.entries(currentCategories.matches)) {
-        if (combos.length===0) continue;
-        const catDiv=document.createElement('div');
-        catDiv.className='category';
-
-        const catHeader=document.createElement('h3');
-        catHeader.textContent=`${category} (${combos.length})`;
-        catDiv.appendChild(catHeader);
-
-        const resultsDiv=document.createElement('div');
-        resultsDiv.className='results';
-
-        combos.forEach(c => {
-          const span=document.createElement('span');
-          span.className='number match';
-          span.textContent=c;
-          resultsDiv.appendChild(span);
-        });
-        catDiv.appendChild(resultsDiv);
-        section.appendChild(catDiv);
-      }
-    }
-    container.appendChild(section);
-  }
-
-  function resetGrids() {
-    document.querySelectorAll('#inputGrid1 input, #inputGrid2 input').forEach(inp=>inp.value='');
-    document.getElementById('output').innerHTML='';
-    document.getElementById('exportButtons').style.display='none';
-    document.getElementById('permMatchesSection').style.display='none';
-    validateInputs();
-  }
-
-  // Export as Text
-  function exportToText() {
-    let text='===== 4D Box Chart Comparison Results =====\n';
-    text+='Generated on '+new Date().toLocaleString()+'\n\n';
-
-    // Charts
-    text+='=== Charts ===\n';
-    text+='Chart 1:\n'+getChartText('inputGrid1')+'\n';
-    text+='Chart 2:\n'+getChartText('inputGrid2')+'\n';
-
-    // Results
-    text+='\n=== Results ===\n';
-    text+=formatCategoriesText(currentCategories.chart1, 'Chart 1');
-    text+=formatCategoriesText(currentCategories.chart2, 'Chart 2');
-
-    // Matching
-    text+='\n=== Matching Combinations ===\n';
-    const totalMatches=Object.values(currentCategories.matches).reduce((a,b)=>a+b.length,0);
-    text+=`Total Matches: ${totalMatches}\n`;
-    text+=formatCategoriesText(currentCategories.matches, 'Matches', true);
-
-    downloadTextFile(text, '4d_comparison_results.txt');
-  }
-
-  function getChartText(gridId) {
-    const inputs=document.querySelectorAll(`#${gridId} input`);
-    let lines=[];
-    for(let i=0; i<16; i+=4){
-      lines.push(Array.from(inputs).slice(i,i+4).map(inp=>inp.value).join(' '));
-    }
-    return lines.join('\n');
-  }
-
-  function formatCategoriesText(categories, title='Categories', isMatch=false) {
-    let txt='';
-    for(const [category, combos] of Object.entries(categories)){
-      if(combos.length===0) continue;
-      txt+=`${category} (${combos.length}):\n`;
-      for(let i=0; i<combos.length; i+=8){
-        const line=combos.slice(i,i+8).join(' ');
-        txt+=line+'\n';
-      }
-      txt+='\n';
-    }
-    return txt;
-  }
-
-  function downloadTextFile(content, filename){
-    const blob=new Blob([content], {type:'text/plain'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download=filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  // Export as Image
-  function exportToImage() {
-    html2canvas(document.body, {scale:2, backgroundColor:'#fff'}).then(canvas => {
-      const a=document.createElement('a');
-      a.href=canvas.toDataURL('image/png');
-      a.download='4d_comparison_results.png';
-      a.click();
-    });
-  }
-
-  // --- Modified permutation matching to work independently ---
-
-  // Check if two strings are permutations
-  function isPermutation(str1, str2) {
-    if (str1.length !== str2.length) return false;
-    const arr1 = str1.split('').sort();
-    const arr2 = str2.split('').sort();
-    return arr1.join('') === arr2.join('');
-  }
-
-  // Main function to find permutation matches
-  function comparePermutationMatches() {
-    // If data not generated yet, generate it automatically
-    if (
-      currentCategories.chart1['24-way'].length === 0 &&
-      currentCategories.chart2['24-way'].length === 0
-    ) {
-      generateCombinations(); // generate data first if empty
-    }
-    // Proceed to compare
-    const combos1 = [
-      ...currentCategories.chart1['24-way'],
-      ...currentCategories.chart1['12-way'],
-      ...currentCategories.chart1['6-way'],
-      ...currentCategories.chart1['4-way'],
-      ...currentCategories.chart1['1-way']
-    ];
-
-    const combos2 = [
-      ...currentCategories.chart2['24-way'],
-      ...currentCategories.chart2['12-way'],
-      ...currentCategories.chart2['6-way'],
-      ...currentCategories.chart2['4-way'],
-      ...currentCategories.chart2['1-way']
-    ];
-
-    const matches = [];
-
-    for (let c1 of combos1) {
-      for (let c2 of combos2) {
-        if (isPermutation(c1, c2)) {
-          matches.push({ c1, c2 });
-        }
-      }
-    }
-
-    displayPermutationMatches(matches);
-  }
-
-  // Show permutation matches in the dedicated section
   function displayPermutationMatches(matches) {
     const section = document.getElementById('permMatchesSection');
-    section.style.display = 'block';
+    section.style.display='block';
 
     const container = document.getElementById('permMatches');
     container.innerHTML='';
@@ -808,6 +666,236 @@
 
       container.appendChild(div);
     });
+  }
+
+  function comparePermutationMatches() {
+    // If no data, generate automatically
+    if (
+      currentCategories.chart1['24-way'].length === 0 &&
+      currentCategories.chart2['24-way'].length === 0
+    ) {
+      generateCombinations();
+    }
+    showToast('Finding permutation matches...');
+    showProcessing(true);
+    // Hashing approach for efficiency
+    const mapChart1 = new Map();
+    for (const c of [
+      ...currentCategories.chart1['24-way'],
+      ...currentCategories.chart1['12-way'],
+      ...currentCategories.chart1['6-way'],
+      ...currentCategories.chart1['4-way'],
+      ...currentCategories.chart1['1-way']
+    ]) {
+      const key = c.split('').sort().join('');
+      if (!mapChart1.has(key)) {
+        mapChart1.set(key, []);
+      }
+      mapChart1.get(key).push(c);
+    }
+
+    const matches = [];
+    for (const c of [
+      ...currentCategories.chart2['24-way'],
+      ...currentCategories.chart2['12-way'],
+      ...currentCategories.chart2['6-way'],
+      ...currentCategories.chart2['4-way'],
+      ...currentCategories.chart2['1-way']
+    ]) {
+      const key = c.split('').sort().join('');
+      if (mapChart1.has(key)) {
+        const c1List = mapChart1.get(key);
+        c1List.forEach(c1 => {
+          matches.push({ c1, c2: c });
+        });
+      }
+    }
+
+    showProcessing(false);
+    showToast(`Found ${matches.length} permutation matches`);
+    displayPermutationMatches(matches);
+  }
+
+  function clearPermutationMatches() {
+    document.getElementById('permMatches').innerHTML='';
+    document.getElementById('permMatchesSection').style.display='none';
+  }
+
+  // Export as Text
+  function exportToText() {
+    let text='===== 4D Box Chart Comparison Results =====\n';
+    text+='Generated on '+new Date().toLocaleString()+'\n\n';
+
+    // Charts
+    text+='=== Charts ===\n';
+    text+='Chart 1:\n'+getChartText('inputGrid1')+'\n';
+    text+='Chart 2:\n'+getChartText('inputGrid2')+'\n';
+
+    // Results
+    text+='\n=== Results ===\n';
+    text+=formatCategoriesText(currentCategories.chart1, 'Chart 1');
+    text+=formatCategoriesText(currentCategories.chart2, 'Chart 2');
+
+    // Matching
+    text+='\n=== Matching Combinations ===\n';
+    const totalMatches=Object.values(currentCategories.matches).reduce((a,b)=>a+b.length,0);
+    text+=`Total Matches: ${totalMatches}\n`;
+    text+=formatCategoriesText(currentCategories.matches, 'Matches', true);
+
+    downloadTextFile(text, '4d_comparison_results.txt');
+  }
+
+  function getChartText(gridId) {
+    const inputs=document.querySelectorAll(`#${gridId} input`);
+    let lines=[];
+    for(let i=0; i<16; i+=4){
+      lines.push(Array.from(inputs).slice(i,i+4).map(inp=>inp.value).join(' '));
+    }
+    return lines.join('\n');
+  }
+
+  function formatCategoriesText(categories, title='Categories', isMatch=false) {
+    let txt='';
+    if (categories instanceof Object && !categories.length) {
+      // For direct object with arrays
+      for(const [category, combos] of Object.entries(categories)){
+        if(combos.length===0) continue;
+        txt+=`${category} (${combos.length}):\n`;
+        for(let i=0; i<combos.length; i+=8){
+          const line=combos.slice(i,i+8).join(' ');
+          txt+=line+'\n';
+        }
+        txt+='\n';
+      }
+    } else {
+      // For array of matches
+      for(const item of categories){
+        txt+=`${item.c1} <=> ${item.c2}\n`;
+      }
+    }
+    return txt;
+  }
+
+  function downloadTextFile(content, filename){
+    const blob=new Blob([content], {type:'text/plain'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // Export as Image
+  function exportToImage() {
+    showToast('Exporting image...');
+    html2canvas(document.body, {scale:2, backgroundColor:'#fff'}).then(canvas => {
+      const a=document.createElement('a');
+      a.href=canvas.toDataURL('image/png');
+      a.download='4d_comparison_results.png';
+      a.click();
+    });
+  }
+
+  // Export as CSV
+  function exportToCSV() {
+    let csv='Category,Item\n';
+    // Chart1
+    for(const [category, combos] of Object.entries(currentCategories.chart1)){
+      combos.forEach(c => {
+        csv+=`Chart1 - ${category},${c}\n`;
+      });
+    }
+    // Chart2
+    for(const [category, combos] of Object.entries(currentCategories.chart2)){
+      combos.forEach(c => {
+        csv+=`Chart2 - ${category},${c}\n`;
+      });
+    }
+    // Matches
+    for(const [category, combos] of Object.entries(currentCategories.matches)){
+      combos.forEach(c => {
+        csv+=`Match - ${category},${c}\n`;
+      });
+    }
+    const blob=new Blob([csv], {type:'text/csv'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='4d_comparison_data.csv';
+    a.click();
+  }
+
+  // Save & Load State
+  function saveState() {
+    const data = {
+      grid1: Array.from(document.querySelectorAll('#inputGrid1 input')).map(inp=>inp.value),
+      grid2: Array.from(document.querySelectorAll('#inputGrid2 input')).map(inp=>inp.value)
+    };
+    localStorage.setItem('chartData', JSON.stringify(data));
+    showToast('State saved.');
+  }
+
+  function loadState() {
+    const dataStr=localStorage.getItem('chartData');
+    if (dataStr) {
+      const data=JSON.parse(dataStr);
+      data.grid1.forEach((v,i)=>{ document.querySelectorAll('#inputGrid1 input')[i].value=v; });
+      data.grid2.forEach((v,i)=>{ document.querySelectorAll('#inputGrid2 input')[i].value=v; });
+      validateInputs();
+      updateGenerateButtonState();
+      showToast('State loaded.');
+    } else {
+      showToast('No saved state found.');
+    }
+  }
+
+  // Toast Notification
+  function showToast(msg) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id='toast';
+      toast.style.position='fixed';
+      toast.style.bottom='20px';
+      toast.style.right='20px';
+      toast.style.background='#333';
+      toast.style.color='#fff';
+      toast.style.padding='10px 20px';
+      toast.style.borderRadius='5px';
+      toast.style.display='none';
+      toast.style.zIndex='9999';
+      document.body.appendChild(toast);
+    }
+    toast.innerHTML=msg;
+    toast.style.display='block';
+    setTimeout(()=>{ toast.style.display='none'; }, 3000);
+  }
+
+  // Keyboard shortcuts
+  function setupShortcuts() {
+    document.addEventListener('keydown', (e) => {
+      if(e.ctrlKey && e.key==='g') {
+        e.preventDefault();
+        generateCombinations();
+      } else if(e.ctrlKey && e.key==='c') {
+        e.preventDefault();
+        comparePermutationMatches();
+      } else if(e.ctrlKey && e.key==='r') {
+        e.preventDefault();
+        resetGrids();
+      }
+    });
+  }
+
+  function resetGrids() {
+    document.querySelectorAll('#inputGrid1 input, #inputGrid2 input').forEach(inp=>{ inp.value=''; inp.style.borderColor=''; });
+    document.getElementById('output').innerHTML='';
+    document.getElementById('exportButtons').style.display='none';
+    document.getElementById('permMatchesSection').style.display='none';
+    updateGenerateButtonState();
   }
 
 </script>
