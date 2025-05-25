@@ -718,7 +718,7 @@
     });
   }
 
-  // --- New functions for permutation matching ---
+  // --- Modified permutation matching to work independently ---
 
   // Check if two strings are permutations
   function isPermutation(str1, str2) {
@@ -730,7 +730,14 @@
 
   // Main function to find permutation matches
   function comparePermutationMatches() {
-    // Gather all combos from both charts
+    // If data not generated yet, generate it automatically
+    if (
+      currentCategories.chart1['24-way'].length === 0 &&
+      currentCategories.chart2['24-way'].length === 0
+    ) {
+      generateCombinations(); // generate data first if empty
+    }
+    // Proceed to compare
     const combos1 = [
       ...currentCategories.chart1['24-way'],
       ...currentCategories.chart1['12-way'],
@@ -749,7 +756,6 @@
 
     const matches = [];
 
-    // Compare each in combos1 with each in combos2
     for (let c1 of combos1) {
       for (let c2 of combos2) {
         if (isPermutation(c1, c2)) {
@@ -758,7 +764,6 @@
       }
     }
 
-    // Show results
     displayPermutationMatches(matches);
   }
 
